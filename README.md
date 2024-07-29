@@ -67,3 +67,5 @@ Licensed under MIT. See [LICENSE](LICENSE) for details.
 ---
 
 Simplify hunger management on your Minecraft server with FeedCommand! 🎮
+
+![Feed](feed.png)
