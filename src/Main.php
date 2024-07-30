@@ -9,9 +9,9 @@
  *
  * Plugin permettant de vous nourrir ou alors de nourrir une autre personne
  *
- * @author SynopsieTeam
- * @link https://neta.arkaniastudios.com/
- * @version 1.1.0
+ * @author Synopsie
+ * @link https://github.com/Synopsie
+ * @version 1.1.1
  *
  */
 
@@ -24,7 +24,6 @@ use feed\command\FeedCommand;
 use iriss\listener\CommandListener;
 use olymp\PermissionManager;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\permission\Permission;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 
@@ -45,32 +44,32 @@ class Main extends PluginBase {
 		$this->loadCooldown();
 	}
 
-    /**
-     * @throws Exception
-     */
-    protected function onEnable() : void {
+	/**
+	 * @throws Exception
+	 */
+	protected function onEnable() : void {
 		$config = $this->config;
 
-        require $this->getFile() . 'vendor/autoload.php';
+		require $this->getFile() . 'vendor/autoload.php';
 
 		if ($config->get('enable-plugin-message', true) === true) {
 			$this->getLogger()->info($config->get('enable-plugin-message-text', '§aFeed plugin has been enabled.'));
 		}
 
-        $type = match ($config->get('default', 'op')) {
-            'console' => DefaultPermissions::ROOT_CONSOLE,
-            'user' => DefaultPermissions::ROOT_USER,
-            default => DefaultPermissions::ROOT_OPERATOR,
-        };
-        $otherType = match ($config->get('default-feed-others', 'op')) {
-            'console' => DefaultPermissions::ROOT_CONSOLE,
-            'user' => DefaultPermissions::ROOT_USER,
-            default => DefaultPermissions::ROOT_OPERATOR,
-        };
+		$type = match ($config->get('default', 'op')) {
+			'console' => DefaultPermissions::ROOT_CONSOLE,
+			'user'    => DefaultPermissions::ROOT_USER,
+			default   => DefaultPermissions::ROOT_OPERATOR,
+		};
+		$otherType = match ($config->get('default-feed-others', 'op')) {
+			'console' => DefaultPermissions::ROOT_CONSOLE,
+			'user'    => DefaultPermissions::ROOT_USER,
+			default   => DefaultPermissions::ROOT_OPERATOR,
+		};
 
 		$permissionManager = new PermissionManager();
-        $permissionManager->registerPermission($config->get('permission'), 'feed.command', $type);
-        $permissionManager->registerPermission($config->get('permission-feed-others'), 'feed.command.feedothers', $otherType);
+		$permissionManager->registerPermission($config->get('permission'), 'feed.command', $type);
+		$permissionManager->registerPermission($config->get('permission-feed-others'), 'feed.command.feedothers', $otherType);
 
 		$this->getServer()->getCommandMap()->register(
 			'FeedCommand-Command',

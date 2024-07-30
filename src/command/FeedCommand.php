@@ -9,9 +9,9 @@
  *
  * Plugin permettant de vous nourrir ou alors de nourrir une autre personne
  *
- * @author SynopsieTeam
- * @link https://neta.arkaniastudios.com/
- * @version 1.1.0
+ * @author Synopsie
+ * @link https://github.com/Synopsie
+ * @version 1.1.1
  *
  */
 
