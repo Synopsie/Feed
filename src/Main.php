@@ -1,92 +1,116 @@
 <?php
+
+/*
+ *  ____   __   __  _   _    ___    ____    ____    ___   _____
+ * / ___|  \ \ / / | \ | |  / _ \  |  _ \  / ___|  |_ _| | ____|
+ * \___ \   \ V /  |  \| | | | | | | |_) | \___ \   | |  |  _|
+ *  ___) |   | |   | |\  | | |_| | |  __/   ___) |  | |  | |___
+ * |____/    |_|   |_| \_|  \___/  |_|     |____/  |___| |_____|
+ *
+ * Plugin permettant de vous nourrir ou alors de nourrir une autre personne
+ *
+ * @author SynopsieTeam
+ * @link https://neta.arkaniastudios.com/
+ * @version 1.1.0
+ *
+ */
+
 declare(strict_types=1);
 
 namespace feed;
 
+use Exception;
 use feed\command\FeedCommand;
+use iriss\listener\CommandListener;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\Permission;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
+use function time;
 
 class Main extends PluginBase {
+	/** @var array<string, int> */
+	private array $cooldown = [];
 
-    /** @var array<string, int> */
-    private array $cooldown = [];
+	public Config $config;
 
-    public Config $config;
+	protected function onLoad() : void {
+		$this->saveResource('config.yml');
+		$this->config = new Config($this->getDataFolder() . 'config.yml', Config::YAML);
+		if ($this->config->get('load-plugin-message', true) === true) {
+			$this->getLogger()->info($this->config->get('load-plugin-message-text', '§aFeed plugin has been loaded.'));
+		}
+		$this->loadCooldown();
+	}
 
-    protected function onLoad() : void {
-        $this->saveResource('config.yml', false);
-        $this->config = new Config($this->getDataFolder() . 'config.yml', Config::YAML);
-        if ($this->config->get('load-plugin-message', true) === true) {
-            $this->getLogger()->info($this->config->get('load-plugin-message-text', '§aFeed plugin has been loaded.'));
-        }
-        $this->loadCooldown();
-    }
+	private function type(string $match) : Permission {
+		$consoleRoot  = DefaultPermissions::registerPermission(new Permission(DefaultPermissions::ROOT_CONSOLE));
+		$operatorRoot = DefaultPermissions::registerPermission(new Permission(DefaultPermissions::ROOT_OPERATOR, '', [$consoleRoot]));
+		$everyoneRoot = DefaultPermissions::registerPermission(new Permission(DefaultPermissions::ROOT_USER, ''), [$operatorRoot]);
+		return match ($match) {
+			'console' => $consoleRoot,
+			'op'      => $operatorRoot,
+			default   => $everyoneRoot
+		};
+	}
 
-    private function type(string $match) : Permission {
-        $consoleRoot  = DefaultPermissions::registerPermission(new Permission(DefaultPermissions::ROOT_CONSOLE));
-        $operatorRoot = DefaultPermissions::registerPermission(new Permission(DefaultPermissions::ROOT_OPERATOR, '', [$consoleRoot]));
-        $everyoneRoot = DefaultPermissions::registerPermission(new Permission(DefaultPermissions::ROOT_USER, ''), [$operatorRoot]);
-        return match ($match) {
-            'console' => $consoleRoot,
-            'op' => $operatorRoot,
-            default => $everyoneRoot
-        };
-    }
-
+    /**
+     * @throws Exception
+     */
     protected function onEnable() : void {
-        $config = $this->config;
-        if ($config->get('enable-plugin-message', true) === true) {
-            $this->getLogger()->info($config->get('enable-plugin-message-text', '§aFeed plugin has been enabled.'));
-        }
+		$config = $this->config;
 
-        $permission = new Permission($config->get('permission', 'feed.command'));
-        $permissionOther = new Permission($config->get('permission-feed-others', 'feed.command.other'));
-        DefaultPermissions::registerPermission($permission, [$this->type($config->get('default', 'everyone'))]);
-        DefaultPermissions::registerPermission($permissionOther, [$this->type($config->get('default-feed-others', 'everyone'))]);
+        require $this->getFile() . 'vendor/autoload.php';
 
+		if ($config->get('enable-plugin-message', true) === true) {
+			$this->getLogger()->info($config->get('enable-plugin-message-text', '§aFeed plugin has been enabled.'));
+		}
 
-        $this->getServer()->getCommandMap()->register(
-            'FeedCommand-Command',
-            new FeedCommand(
-                $this,
-                $config->get('name', 'feed'),
-                $config->get('description', 'Feed command'),
-                $config->get('usage', '/feed [player]'),
-                $config->get('aliases', ['eat']),
-                $config->get('permission', 'feed.command')
-            )
-        );
+		$permission      = new Permission($config->get('permission', 'feed.command'));
+		$permissionOther = new Permission($config->get('permission-feed-others', 'feed.command.other'));
+		DefaultPermissions::registerPermission($permission, [$this->type($config->get('default', 'everyone'))]);
+		DefaultPermissions::registerPermission($permissionOther, [$this->type($config->get('default-feed-others', 'everyone'))]);
 
-    }
+		$this->getServer()->getCommandMap()->register(
+			'FeedCommand-Command',
+			new FeedCommand(
+				$this,
+				$config->get('name', 'feed'),
+				$config->get('description', 'Feed command'),
+				$config->get('usage', '/feed [player]'),
+				$config->get('aliases', ['eat']),
+				$config->get('permission', 'feed.command')
+			)
+		);
 
-    protected function onDisable() : void {
-        $this->saveCooldown();
-        if ($this->config->get('disable-plugin-message', true) === true) {
-            $this->getLogger()->info($this->config->get('disable-plugin-message-text', '§cFeed plugin has been unloaded.'));
-        }
-    }
+		new CommandListener($this);
+	}
 
-    public function addCooldown(string $player) : void {
-        if($this->config->get('cooldown', 5) <= 0){
-            return;
-        }
-        $this->cooldown[$player] = time() + $this->getConfig()->get('cooldown', 5);
-    }
+	protected function onDisable() : void {
+		$this->saveCooldown();
+		if ($this->config->get('disable-plugin-message', true) === true) {
+			$this->getLogger()->info($this->config->get('disable-plugin-message-text', '§cFeed plugin has been unloaded.'));
+		}
+	}
 
-    public function getCooldown(string $player) : int {
-        return $this->cooldown[$player] ?? 0;
-    }
+	public function addCooldown(string $player) : void {
+		if($this->config->get('cooldown', 5) <= 0) {
+			return;
+		}
+		$this->cooldown[$player] = time() + $this->getConfig()->get('cooldown', 5);
+	}
 
-    private function saveCooldown(): void {
-        $this->config->set('cooldown-list', $this->cooldown);
-        $this->config->save();
-    }
+	public function getCooldown(string $player) : int {
+		return $this->cooldown[$player] ?? 0;
+	}
 
-    private function loadCooldown(): void {
-        $this->cooldown = $this->config->get('cooldown-list', []);
-    }
+	private function saveCooldown() : void {
+		$this->config->set('cooldown-list', $this->cooldown);
+		$this->config->save();
+	}
+
+	private function loadCooldown() : void {
+		$this->cooldown = $this->config->get('cooldown-list', []);
+	}
 
 }
