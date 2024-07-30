@@ -56,20 +56,9 @@ class Main extends PluginBase {
 			$this->getLogger()->info($config->get('enable-plugin-message-text', '§aFeed plugin has been enabled.'));
 		}
 
-		$type = match ($config->get('default', 'op')) {
-			'console' => DefaultPermissions::ROOT_CONSOLE,
-			'user'    => DefaultPermissions::ROOT_USER,
-			default   => DefaultPermissions::ROOT_OPERATOR,
-		};
-		$otherType = match ($config->get('default-feed-others', 'op')) {
-			'console' => DefaultPermissions::ROOT_CONSOLE,
-			'user'    => DefaultPermissions::ROOT_USER,
-			default   => DefaultPermissions::ROOT_OPERATOR,
-		};
-
 		$permissionManager = new PermissionManager();
-		$permissionManager->registerPermission($config->get('permission'), 'feed.command', $type);
-		$permissionManager->registerPermission($config->get('permission-feed-others'), 'feed.command.feedothers', $otherType);
+		$permissionManager->registerPermission($config->get('permission'), 'feed.command', $permissionManager->getType($config->get('default', 'op')));
+		$permissionManager->registerPermission($config->get('permission-feed-others'), 'feed.command.feedothers', $permissionManager->getType($config->get('default-feed-others', 'op')));
 
 		$this->getServer()->getCommandMap()->register(
 			'FeedCommand-Command',

@@ -4,8 +4,8 @@
     "type": "project",
     "require": {
         "php": "^8.1",
-        "synopsie/iriss-command": "^1.0",
-        "synopsie/olymp-permission": "dev-stable"
+        "synopsie/iriss-command": "^1.1",
+        "synopsie/olymp-permission": "^1.0"
     },
     "require-dev": {
         "pocketmine/pocketmine-mp": "^5.17",
