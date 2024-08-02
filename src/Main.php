@@ -26,6 +26,7 @@ use olymp\PermissionManager;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
+use sofia\Updater;
 
 use function time;
 
@@ -51,6 +52,8 @@ class Main extends PluginBase {
 		$config = $this->config;
 
 		require $this->getFile() . 'vendor/autoload.php';
+
+        Updater::checkUpdate('Feed', $this->getDescription()->getVersion(), 'Synopsie', 'Feed');
 
 		if ($config->get('enable-plugin-message', true) === true) {
 			$this->getLogger()->info($config->get('enable-plugin-message-text', '§aFeed plugin has been enabled.'));
