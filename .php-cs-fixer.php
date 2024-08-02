@@ -131,7 +131,7 @@ Plugin permettant de vous nourrir ou alors de nourrir une autre personne
 
 @author Synopsie
 @link https://github.com/Synopsie
-@version 1.1.1
+@version 1.1.2
 
 BODY,
             'location' => 'after_open'

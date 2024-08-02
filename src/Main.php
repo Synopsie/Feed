@@ -11,7 +11,7 @@
  *
  * @author Synopsie
  * @link https://github.com/Synopsie
- * @version 1.1.1
+ * @version 1.1.2
  *
  */
 
@@ -23,7 +23,6 @@ use Exception;
 use feed\command\FeedCommand;
 use iriss\listener\CommandListener;
 use olymp\PermissionManager;
-use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use sofia\Updater;
@@ -53,7 +52,7 @@ class Main extends PluginBase {
 
 		require $this->getFile() . 'vendor/autoload.php';
 
-        Updater::checkUpdate('Feed', $this->getDescription()->getVersion(), 'Synopsie', 'Feed');
+		Updater::checkUpdate('Feed', $this->getDescription()->getVersion(), 'Synopsie', 'Feed');
 
 		if ($config->get('enable-plugin-message', true) === true) {
 			$this->getLogger()->info($config->get('enable-plugin-message-text', '§aFeed plugin has been enabled.'));
