@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d69e6751b5f5550907838f0ef8c32f85",
+    "content-hash": "fd02ce5ed9de435ab86b4cb1811878c0",
     "packages": [
         {
             "name": "synopsie/iriss-command",
@@ -102,16 +102,16 @@
         },
         {
             "name": "synopsie/sofia-updater",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Synopsie/Sofia-Updater.git",
-                "reference": "96c0833194110413aeb77a739f91dd70fc634788"
+                "reference": "09a85ecd41da577d0978d337e7ac5e8ddfa04411"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Synopsie/Sofia-Updater/zipball/96c0833194110413aeb77a739f91dd70fc634788",
-                "reference": "96c0833194110413aeb77a739f91dd70fc634788",
+                "url": "https://api.github.com/repos/Synopsie/Sofia-Updater/zipball/09a85ecd41da577d0978d337e7ac5e8ddfa04411",
+                "reference": "09a85ecd41da577d0978d337e7ac5e8ddfa04411",
                 "shasum": ""
             },
             "require": {
@@ -140,9 +140,9 @@
             "description": "Sofia-Updater est une api permettant à un plugin de vérifier si une nouvelle release est disponible",
             "support": {
                 "issues": "https://github.com/Synopsie/Sofia-Updater/issues",
-                "source": "https://github.com/Synopsie/Sofia-Updater/tree/v1.0.0"
+                "source": "https://github.com/Synopsie/Sofia-Updater/tree/v1.1.0"
             },
-            "time": "2024-08-02T08:38:42+00:00"
+            "time": "2024-08-03T16:03:49+00:00"
         }
     ],
     "packages-dev": [
